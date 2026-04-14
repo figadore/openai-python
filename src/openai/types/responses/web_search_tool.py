@@ -9,21 +9,31 @@ __all__ = ["WebSearchTool", "Filters", "UserLocation"]
 
 
 class Filters(BaseModel):
-    """Filters for the search."""
-
     allowed_domains: Optional[List[str]] = None
     """Allowed domains for the search.
 
     If not provided, all domains are allowed. Subdomains of the provided domains are
-    allowed as well.
+    allowed as well. Supports wildcards using '*' for pattern matching.
 
-    Example: `["pubmed.ncbi.nlm.nih.gov"]`
+    Examples: 
+    - `["pubmed.ncbi.nlm.nih.gov"]` - exact domain match
+    - `["*.edu", "*.gov"]` - all educational and government domains
+    - `["github.com", "*.openai.com"]` - GitHub and all OpenAI subdomains
+    """
+
+    excluded_domains: Optional[List[str]] = None
+    """Domains to exclude from the search.
+
+    Takes precedence over allowed_domains. Supports wildcards using '*' for pattern matching.
+
+    Examples:
+    - `["spam.com", "ads.net"]` - exclude specific domains
+    - `["*.spam.com"]` - exclude all subdomains of spam.com
+    - `["*.ads.*"]` - exclude domains with 'ads' as a subdomain
     """
 
 
 class UserLocation(BaseModel):
-    """The approximate location of the user."""
-
     city: Optional[str] = None
     """Free text input for the city of the user, e.g. `San Francisco`."""
 
@@ -47,12 +57,6 @@ class UserLocation(BaseModel):
 
 
 class WebSearchTool(BaseModel):
-    """Search the Internet for sources related to the prompt.
-
-    Learn more about the
-    [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
-    """
-
     type: Literal["web_search", "web_search_2025_08_26"]
     """The type of the web search tool.
 
@@ -71,3 +75,4 @@ class WebSearchTool(BaseModel):
 
     user_location: Optional[UserLocation] = None
     """The approximate location of the user."""
+
